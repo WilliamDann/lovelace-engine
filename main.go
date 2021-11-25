@@ -3,8 +3,6 @@ package main
 import "fmt"
 
 func main() {
-	board := NewChessboard()
-
-	board.squares[coords_to_square_num(1, 1)] = white_pawn
+	board := ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 	fmt.Println(board)
 }

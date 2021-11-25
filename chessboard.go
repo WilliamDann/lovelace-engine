@@ -1,5 +1,7 @@
 package main
 
+import "strconv"
+
 type Piece int
 
 const (
@@ -44,6 +46,30 @@ type Chessboard struct {
 
 func NewChessboard() Chessboard {
 	return Chessboard{[64]Piece{}}
+}
+
+// https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+func ParseFen(fen string) Chessboard {
+	board := NewChessboard()
+
+	symbols_to_pieces := make(map[string]Piece)
+	for key, value := range piece_symbols {
+		symbols_to_pieces[value] = key
+	}
+
+	i := 0
+	for _, char := range fen {
+		if val, ok := symbols_to_pieces[string(char)]; ok {
+			board.squares[i] = val
+			i++
+		}
+
+		if num, err := strconv.Atoi(string(char)); err == nil {
+			i += num
+		}
+	}
+
+	return board
 }
 
 func (board Chessboard) String() string {
