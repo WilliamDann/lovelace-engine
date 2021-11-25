@@ -72,6 +72,18 @@ func ParseFen(fen string) Chessboard {
 	return board
 }
 
+func (board Chessboard) GetPieceLocations(piece_type Piece) (bb Bitboard) {
+	bb = Bitboard{}
+
+	for i, piece := range board.squares {
+		if piece == piece_type {
+			bb.board[i] = true
+		}
+	}
+
+	return
+}
+
 func (board Chessboard) String() string {
 	output := ""
 	for i, piece := range board.squares {
