@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetWhitePawnMovesUnmoved(t *testing.T) {
 	board := NewChessboard()
@@ -82,19 +84,21 @@ func TestGetWhitePawnMovesUnmovedBlockedFar(t *testing.T) {
 	}
 }
 
-func TestGetWhitePawnMovesCaptureRight(t *testing.T) {
+func TestGetWhitePawnMovesCaptures(t *testing.T) {
 	board := NewChessboard()
 	index1 := CoordsToSquareIndex(1, 1)
-	index2 := CoordsToSquareIndex(2, 3)
+	index2 := index1 + 8 + 1
+	index3 := index1 + 8 - 1
 
 	board.squares[index1] = white_pawn
 	board.squares[index2] = black_pawn
+	board.squares[index3] = black_pawn
 
 	game := Game{board, true, []Move{}}
 
 	moves := game.GetPawnMoves(true)
 
-	if len(moves) != 2 {
+	if len(moves) != 4 {
 		t.Errorf("Pawn cannot be captured")
 	}
 }
