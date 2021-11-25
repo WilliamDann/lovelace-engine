@@ -24,6 +24,10 @@ const (
 	//   Maybe the behavior of that function should be different instead
 	//   notice that none is not in piece_types for this reason
 	//
+	//   this might just mean that a square centered board representation is better, rather than a
+	//   piece centered one like this
+	//       adding none to piece_symbols as '_' would seem to make sense
+	//
 	//   Because we use bitboards you cannot simply place a none piece to clear a square so this is misleading
 	//   or we could call clear_square if that is attempted in place_piece
 	//
