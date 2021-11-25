@@ -23,19 +23,19 @@ const (
 )
 
 var piece_symbols map[Piece]string = map[Piece]string{
-	white_pawn:   "P",
-	white_rook:   "R",
-	white_bishop: "B",
-	white_knight: "N",
-	white_queen:  "Q",
-	white_king:   "K",
+	white_pawn:   "p",
+	white_rook:   "r",
+	white_bishop: "b",
+	white_knight: "n",
+	white_queen:  "q",
+	white_king:   "k",
 
-	black_pawn:   "p",
-	black_rook:   "r",
-	black_bishop: "b",
-	black_knight: "n",
-	black_queen:  "q",
-	black_king:   "k",
+	black_pawn:   "P",
+	black_rook:   "R",
+	black_bishop: "B",
+	black_knight: "N",
+	black_queen:  "Q",
+	black_king:   "K",
 
 	none: "_",
 }
