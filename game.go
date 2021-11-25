@@ -48,11 +48,13 @@ func (game Game) PushMove(move Move) Game {
 	game.board.squares[move.to], game.board.squares[move.from] = game.board.squares[move.from], game.board.squares[move.to]
 	game.moves = append(game.moves, move)
 
+	game.whiteToPlay = !game.whiteToPlay
+
 	return game
 }
 
 // TODO captures en passant
-func (game Game) GetPawnMoves(white bool) (moves []Move) {
+func (game Game) GetPawnMoves() (moves []Move) {
 	movements := []Move{}
 	captures := []Move{}
 
@@ -64,7 +66,7 @@ func (game Game) GetPawnMoves(white bool) (moves []Move) {
 	promoteRankLow := 48
 	promoteRankHigh := 55
 
-	if !white {
+	if !game.whiteToPlay {
 		seeking = black_pawn
 		startRankLow, startRankHigh, promoteRankLow, promoteRankHigh = promoteRankLow, promoteRankHigh, startRankLow, startRankHigh
 	}
@@ -74,24 +76,24 @@ func (game Game) GetPawnMoves(white bool) (moves []Move) {
 			// moves
 			if square >= startRankLow && square <= startRankHigh {
 				// double move
-				movements = append(movements, PawnStep(square, white))
+				movements = append(movements, PawnStep(square, game.whiteToPlay))
 				movements = append(movements, NewMove(square, PawnStep(PawnStep(square, white).to, white).to))
 			} else if square >= promoteRankLow && square <= promoteRankHigh {
 				// promotion move
 				movements = append(movements,
-					Move{square, PawnStep(square, white).to, white_queen, none},
-					Move{square, PawnStep(square, white).to, white_knight, none},
-					Move{square, PawnStep(square, white).to, white_bishop, none},
-					Move{square, PawnStep(square, white).to, white_rook, none},
+					Move{square, PawnStep(square, game.whiteToPlay).to, white_queen, none},
+					Move{square, PawnStep(square, game.whiteToPlay).to, white_knight, none},
+					Move{square, PawnStep(square, game.whiteToPlay).to, white_bishop, none},
+					Move{square, PawnStep(square, game.whiteToPlay).to, white_rook, none},
 				)
 
 			} else {
 				// single move
-				movements = append(movements, PawnStep(square, white))
+				movements = append(movements, PawnStep(square, game.whiteToPlay))
 			}
 
 			// captues
-			captures = append(captures, PawnCaptures(square, white)...)
+			captures = append(captures, PawnCaptures(square, game.whiteToPlay)...)
 		}
 	}
 
