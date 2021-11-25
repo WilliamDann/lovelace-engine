@@ -10,7 +10,7 @@ type Bitboard struct {
 	board [64]bool
 }
 
-func coords_to_square_num(x, y int) int {
+func CoordsToSquareIndex(x, y int) int {
 	return y*8 + x
 }
 
