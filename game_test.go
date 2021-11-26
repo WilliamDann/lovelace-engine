@@ -4,178 +4,270 @@ import (
 	"testing"
 )
 
-func TestGetWhitePawnMovesUnmoved(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 1)
-
-	board.squares[index] = white_pawn
-	game := Game{board, true, []Move{}}
-
-	moves := game.GetPawnMoves(true)
-
-	if len(moves) != 2 {
-		t.Errorf("Extra moves generated")
+func AsertMoveEquals(t *testing.T, actual, expected Move) {
+	if actual.from != expected.from {
+		t.Errorf("Starting squares not equal " + actual.String() + " != " + expected.String())
 	}
-	if moves[0].to != CoordsToSquareIndex(0, 2) {
-		t.Errorf("Pawn cannot be moved up one y position")
+	if actual.capture != expected.capture {
+		t.Errorf("Captures not equal " + actual.String() + " != " + expected.String())
 	}
-	if moves[1].to != CoordsToSquareIndex(0, 3) {
-		t.Errorf("Pawn cannot be moved up two y positions")
+	if actual.promote != expected.promote {
+		t.Errorf("Promotions not  " + actual.String() + " != " + expected.String())
 	}
 }
 
-func TestGetWhitePawnMovesMoved(t *testing.T) {
+func TestWhitePawnsOn2(t *testing.T) {
 	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 2)
-
-	board.squares[index] = white_pawn
-	game := Game{board, true, []Move{}}
-
-	moves := game.GetPawnMoves(true)
-
-	if len(moves) != 1 {
-		t.Errorf("Pawn can be moved twice after leaving starting square")
+	expected := []Move{
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) + 8, none, none},
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) + 16, none, none},
 	}
-}
 
-func TestGetWhitePawnPromote(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 6)
-
-	board.squares[index] = white_pawn
-	game := Game{board, true, []Move{}}
-
-	moves := game.GetPawnMoves(true)
-
-	if len(moves) != 4 {
-		t.Errorf("Pawn cannot promote!")
-	}
-}
-
-func TestGetWhitePawnMovesUnmovedBlockedClose(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 1)
-
-	board.squares[index] = white_pawn
-	board.squares[index+8] = black_pawn
+	board.squares[CoordsToSquareIndex(0, 1)] = white_pawn
 
 	game := Game{board, true, []Move{}}
+	moves := game.GetPawnMoves()
 
-	moves := game.GetPawnMoves(true)
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
 
-	if len(moves) != 0 {
-		t.Errorf("Pawn can be moved when blocked")
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
 	}
 }
 
-func TestGetWhitePawnMovesUnmovedBlockedFar(t *testing.T) {
+func TestBlackPawnsOn2(t *testing.T) {
 	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 1)
-
-	board.squares[index] = white_pawn
-	board.squares[index+16] = black_pawn
-
-	game := Game{board, true, []Move{}}
-
-	moves := game.GetPawnMoves(true)
-
-	if len(moves) != 1 {
-		t.Errorf("Pawn can be moved when blocked")
+	expected := []Move{
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) - 8, none, none},
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) - 16, none, none},
 	}
-}
 
-func TestGetWhitePawnMovesCaptures(t *testing.T) {
-	board := NewChessboard()
-	index1 := CoordsToSquareIndex(1, 1)
-	index2 := index1 + 8 + 1
-	index3 := index1 + 8 - 1
-
-	board.squares[index1] = white_pawn
-	board.squares[index2] = black_pawn
-	board.squares[index3] = black_pawn
-
-	game := Game{board, true, []Move{}}
-
-	moves := game.GetPawnMoves(true)
-
-	if len(moves) != 4 {
-		t.Errorf("Pawn cannot be captured")
-	}
-}
-
-func TestGetBlackPawnMovesUnmoved(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 6)
-
-	board.squares[index] = black_pawn
-	game := Game{board, false, []Move{}}
-
-	moves := game.GetPawnMoves(false)
-
-	if moves[0].to != CoordsToSquareIndex(0, 5) {
-		t.Errorf("Pawn cannot be moved up one y position")
-	}
-	if moves[1].to != CoordsToSquareIndex(0, 4) {
-		t.Errorf("Pawn cannot be moved up two y positions")
-	}
-}
-
-func TestGetBlackPawnMovesMoved(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 5)
-
-	board.squares[index] = black_pawn
-	game := Game{board, false, []Move{}}
-
-	moves := game.GetPawnMoves(false)
-
-	if len(moves) != 1 {
-		t.Errorf("Pawn can be moved twice after leaving starting square")
-	}
-}
-
-func TestGetBlackPawnPromote(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 1)
-
-	board.squares[index] = black_pawn
-	game := Game{board, false, []Move{}}
-
-	moves := game.GetPawnMoves(false)
-
-	if len(moves) != 4 {
-		t.Errorf("Pawn cannot promote!")
-	}
-}
-
-func TestGetBlackPawnMovesUnmovedBlockedClose(t *testing.T) {
-	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 7)
-
-	board.squares[index] = black_pawn
-	board.squares[index-8] = white_pawn
+	board.squares[CoordsToSquareIndex(0, 6)] = black_pawn
 
 	game := Game{board, false, []Move{}}
+	moves := game.GetPawnMoves()
 
-	moves := game.GetPawnMoves(false)
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
 
-	if len(moves) != 0 {
-		t.Errorf("Pawn can be moved when blocked")
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
 	}
 }
 
-func TestGetBlackPawnMovesUnmovedBlockedFar(t *testing.T) {
+func TestWhitePawnsOff2(t *testing.T) {
 	board := NewChessboard()
-	index := CoordsToSquareIndex(0, 7)
+	expected := []Move{
+		{CoordsToSquareIndex(0, 2), CoordsToSquareIndex(0, 2) + 8, none, none},
+	}
 
-	board.squares[index] = black_pawn
-	board.squares[index-16] = white_pawn
+	board.squares[CoordsToSquareIndex(0, 2)] = white_pawn
+
+	game := Game{board, true, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestBlackPawnsOff2(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(0, 5), CoordsToSquareIndex(0, 5) - 8, none, none},
+	}
+
+	board.squares[CoordsToSquareIndex(0, 5)] = black_pawn
 
 	game := Game{board, false, []Move{}}
+	moves := game.GetPawnMoves()
 
-	moves := game.GetPawnMoves(false)
-
-	if len(moves) != 1 {
-		t.Errorf("Pawn can be moved when blocked")
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
 	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestWhitePawnsPromote(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) + 8, white_queen, none},
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) + 8, white_knight, none},
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) + 8, white_bishop, none},
+		{CoordsToSquareIndex(0, 6), CoordsToSquareIndex(0, 6) + 8, white_rook, none},
+	}
+
+	board.squares[CoordsToSquareIndex(0, 6)] = white_pawn
+
+	game := Game{board, true, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestBlackPawnsPromote(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) - 8, black_queen, none},
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) - 8, black_knight, none},
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) - 8, black_bishop, none},
+		{CoordsToSquareIndex(0, 1), CoordsToSquareIndex(0, 1) - 8, black_rook, none},
+	}
+
+	board.squares[CoordsToSquareIndex(0, 1)] = black_pawn
+
+	game := Game{board, false, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestWhitePawnsCapture(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) + 8, none, none},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) + 16, none, none},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) + 8 + 1, none, black_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) + 8 - 1, none, black_pawn},
+	}
+
+	board.squares[CoordsToSquareIndex(1, 1)] = white_pawn
+	board.squares[CoordsToSquareIndex(1, 1)+8+1] = black_pawn
+	board.squares[CoordsToSquareIndex(1, 1)+8-1] = black_pawn
+
+	game := Game{board, true, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestBlackPawnsCapture(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) - 8, none, none},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) - 16, none, none},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) - 8 + 1, none, white_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) - 8 - 1, none, white_pawn},
+	}
+
+	board.squares[CoordsToSquareIndex(1, 6)] = black_pawn
+	board.squares[CoordsToSquareIndex(1, 6)-8+1] = white_pawn
+	board.squares[CoordsToSquareIndex(1, 6)-8-1] = white_pawn
+
+	game := Game{board, false, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestWhitePawnsCapturePromote(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8, white_queen, none},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8, white_knight, none},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8, white_bishop, none},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8, white_rook, none},
+
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 + 1, white_queen, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 + 1, white_knight, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 + 1, white_bishop, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 + 1, white_rook, black_pawn},
+
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 - 1, white_queen, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 - 1, white_knight, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 - 1, white_bishop, black_pawn},
+		{CoordsToSquareIndex(1, 6), CoordsToSquareIndex(1, 6) + 8 - 1, white_rook, black_pawn},
+	}
+
+	board.squares[CoordsToSquareIndex(1, 6)] = white_pawn
+	board.squares[CoordsToSquareIndex(1, 6)+8+1] = black_pawn
+	board.squares[CoordsToSquareIndex(1, 6)+8-1] = black_pawn
+
+	game := Game{board, true, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestBlackPawnsCapturePrompte(t *testing.T) {
+	board := NewChessboard()
+	expected := []Move{
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8, black_queen, none},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8, black_knight, none},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8, black_bishop, none},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8, black_rook, none},
+
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 + 1, black_queen, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 + 1, black_knight, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 + 1, black_bishop, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 + 1, black_rook, white_pawn},
+
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 - 1, black_queen, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 - 1, black_knight, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 - 1, black_bishop, white_pawn},
+		{CoordsToSquareIndex(1, 1), CoordsToSquareIndex(1, 1) - 8 - 1, black_rook, white_pawn},
+	}
+
+	board.squares[CoordsToSquareIndex(1, 1)] = black_pawn
+	board.squares[CoordsToSquareIndex(1, 1)-8+1] = white_pawn
+	board.squares[CoordsToSquareIndex(1, 1)-8-1] = white_pawn
+
+	game := Game{board, false, []Move{}}
+	moves := game.GetPawnMoves()
+
+	if len(expected) != len(moves) {
+		t.Errorf("Incorrect amount of moves generated")
+	}
+
+	for i, move := range expected {
+		AsertMoveEquals(t, moves[i], move)
+	}
+}
+
+func TestWhitePawnsCaptureEnPassant(t *testing.T) {
+	t.Errorf("Not implemented")
+}
+
+func TestBlackPawnsCaptureEnPassant(t *testing.T) {
+	t.Errorf("Not implemented")
 }

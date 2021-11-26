@@ -1,11 +1,31 @@
 package main
 
+import "strconv"
+
 type Move struct {
 	from int
 	to   int
 
 	promote Piece
 	capture Piece
+}
+
+func (move Move) String() (str string) {
+	str = strconv.FormatInt(int64(move.from), 10)
+
+	if move.capture != none {
+		str += "x"
+	} else {
+		str += "->"
+	}
+
+	str = strconv.FormatInt(int64(move.to), 10)
+
+	if move.capture != none {
+		str += "=" + piece_symbols[move.promote]
+	}
+
+	return
 }
 
 func NewMove(from, to int) Move {
@@ -77,15 +97,24 @@ func (game Game) GetPawnMoves() (moves []Move) {
 			if square >= startRankLow && square <= startRankHigh {
 				// double move
 				movements = append(movements, PawnStep(square, game.whiteToPlay))
-				movements = append(movements, NewMove(square, PawnStep(PawnStep(square, white).to, white).to))
+				movements = append(movements, NewMove(square, PawnStep(PawnStep(square, game.whiteToPlay).to, game.whiteToPlay).to))
 			} else if square >= promoteRankLow && square <= promoteRankHigh {
 				// promotion move
-				movements = append(movements,
-					Move{square, PawnStep(square, game.whiteToPlay).to, white_queen, none},
-					Move{square, PawnStep(square, game.whiteToPlay).to, white_knight, none},
-					Move{square, PawnStep(square, game.whiteToPlay).to, white_bishop, none},
-					Move{square, PawnStep(square, game.whiteToPlay).to, white_rook, none},
-				)
+				if game.whiteToPlay {
+					movements = append(movements,
+						Move{square, PawnStep(square, game.whiteToPlay).to, white_queen, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, white_knight, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, white_bishop, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, white_rook, none},
+					)
+				} else {
+					movements = append(movements,
+						Move{square, PawnStep(square, game.whiteToPlay).to, black_queen, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, black_knight, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, black_bishop, none},
+						Move{square, PawnStep(square, game.whiteToPlay).to, black_rook, none},
+					)
+				}
 
 			} else {
 				// single move
@@ -105,17 +134,27 @@ func (game Game) GetPawnMoves() (moves []Move) {
 	}
 
 	for _, move := range captures {
-		if (move.to <= 0 || move.to >= 64) || game.board.squares[move.to] == none {
+		if (move.to < 0 || move.to >= 64) || game.board.squares[move.to] == none {
 			continue
 		}
 
-		if move.to >= promoteRankLow && move.to <= promoteRankHigh {
-			moves = append(moves,
-				Move{move.from, move.to, white_queen, move.capture},
-				Move{move.from, move.to, white_knight, move.capture},
-				Move{move.from, move.to, white_bishop, move.capture},
-				Move{move.from, move.to, white_rook, move.capture},
-			)
+		if move.from >= promoteRankLow && move.from <= promoteRankHigh {
+			if game.whiteToPlay {
+				moves = append(moves,
+					Move{move.from, move.to, white_queen, game.board.squares[move.to]},
+					Move{move.from, move.to, white_knight, game.board.squares[move.to]},
+					Move{move.from, move.to, white_bishop, game.board.squares[move.to]},
+					Move{move.from, move.to, white_rook, game.board.squares[move.to]},
+				)
+			} else {
+				moves = append(moves,
+					Move{move.from, move.to, black_queen, game.board.squares[move.to]},
+					Move{move.from, move.to, black_knight, game.board.squares[move.to]},
+					Move{move.from, move.to, black_bishop, game.board.squares[move.to]},
+					Move{move.from, move.to, black_rook, game.board.squares[move.to]},
+				)
+
+			}
 		} else {
 			moves = append(moves, Move{move.from, move.to, none, game.board.squares[move.to]})
 		}

@@ -7,7 +7,7 @@ func main() {
 	game := Game{board, true, []Move{}}
 	fmt.Println(game)
 
-	game = game.PushMove(game.GetPawnMoves(game.whiteToPlay)[7])
+	game = game.PushMove(game.GetPawnMoves()[7])
 
 	fmt.Println(game)
 }
