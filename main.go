@@ -1,6 +1,9 @@
-package main
+package lovelace
 
-import "fmt"
+import (
+	"fmt"
+	. "lovelace/source"
+)
 
 func main() {
 	board := ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")

@@ -1,47 +1,47 @@
-package main
+package source
 
 import "strconv"
 
 type Piece int
 
 const (
-	none Piece = 0
+	None Piece = 0
 
-	white_pawn   Piece = iota
-	white_rook   Piece = iota
-	white_bishop Piece = iota
-	white_knight Piece = iota
-	white_queen  Piece = iota
-	white_king   Piece = iota
+	White_pawn   Piece = iota
+	White_rook   Piece = iota
+	White_bishop Piece = iota
+	White_knight Piece = iota
+	White_queen  Piece = iota
+	White_king   Piece = iota
 
-	black_pawn   Piece = iota
-	black_rook   Piece = iota
-	black_bishop Piece = iota
-	black_knight Piece = iota
-	black_queen  Piece = iota
-	black_king   Piece = iota
+	Black_pawn   Piece = iota
+	Black_rook   Piece = iota
+	Black_bishop Piece = iota
+	Black_knight Piece = iota
+	Black_queen  Piece = iota
+	Black_king   Piece = iota
 )
 
 var piece_symbols map[Piece]string = map[Piece]string{
-	white_pawn:   "p",
-	white_rook:   "r",
-	white_bishop: "b",
-	white_knight: "n",
-	white_queen:  "q",
-	white_king:   "k",
+	White_pawn:   "p",
+	White_rook:   "r",
+	White_bishop: "b",
+	White_knight: "n",
+	White_queen:  "q",
+	White_king:   "k",
 
-	black_pawn:   "P",
-	black_rook:   "R",
-	black_bishop: "B",
-	black_knight: "N",
-	black_queen:  "Q",
-	black_king:   "K",
+	Black_pawn:   "P",
+	Black_rook:   "R",
+	Black_bishop: "B",
+	Black_knight: "N",
+	Black_queen:  "Q",
+	Black_king:   "K",
 
-	none: "_",
+	None: "_",
 }
 
 type Chessboard struct {
-	squares [64]Piece
+	Squares [64]Piece
 }
 
 func NewChessboard() Chessboard {
@@ -60,7 +60,7 @@ func ParseFen(fen string) Chessboard {
 	i := 0
 	for _, char := range fen {
 		if val, ok := symbols_to_pieces[string(char)]; ok {
-			board.squares[i] = val
+			board.Squares[i] = val
 			i++
 		}
 
@@ -75,9 +75,9 @@ func ParseFen(fen string) Chessboard {
 func (board Chessboard) GetPieceLocations(piece_type Piece) (bb Bitboard) {
 	bb = Bitboard{}
 
-	for i, piece := range board.squares {
+	for i, piece := range board.Squares {
 		if piece == piece_type {
-			bb.board[i] = true
+			bb.Board[i] = true
 		}
 	}
 
@@ -86,7 +86,7 @@ func (board Chessboard) GetPieceLocations(piece_type Piece) (bb Bitboard) {
 
 func (board Chessboard) String() string {
 	output := ""
-	for i, piece := range board.squares {
+	for i, piece := range board.Squares {
 		output += " " + piece_symbols[piece]
 
 		if (i+1)%8 == 0 && i != 0 {

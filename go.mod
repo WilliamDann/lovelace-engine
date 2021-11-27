@@ -1,3 +1,3 @@
-module williamdann/lovelace
+module lovelace
 
 go 1.17

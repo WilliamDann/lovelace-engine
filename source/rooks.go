@@ -1,4 +1,4 @@
-package main
+package source
 
 func _SliderStep(square, stepX, stepY, i int) (moves []Move) {
 	if stepX*i < 0 || stepX*i > 7 || stepY*i < 0 || stepY*i > 7 {
@@ -6,7 +6,7 @@ func _SliderStep(square, stepX, stepY, i int) (moves []Move) {
 	}
 	step := stepX*i + (stepY*i)*8
 
-	moves = append(moves, Move{square, step, none, none})
+	moves = append(moves, Move{square, step, None, None})
 	return append(moves, _SliderStep(square, stepX, stepY, i+1)...)
 }
 
@@ -15,12 +15,12 @@ func SliderStep(square, stepX, stepY int) (moves []Move) {
 }
 
 func (game Game) GetRookMoves() (moves []Move) {
-	seeking := white_rook
-	if !game.whiteToPlay {
-		seeking = black_rook
+	seeking := White_rook
+	if !game.WhiteToPlay {
+		seeking = Black_rook
 	}
 
-	for square, rook := range game.board.GetPieceLocations(seeking).board {
+	for square, rook := range game.Board.GetPieceLocations(seeking).Board {
 		if rook {
 			moves = append(moves, SliderStep(square, 1, 0)...)
 			moves = append(moves, SliderStep(square, -1, 0)...)

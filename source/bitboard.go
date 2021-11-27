@@ -1,4 +1,4 @@
-package main
+package source
 
 // There are 64 square on a chessboard, and 64 bits in a int64
 // https://www.chessprogramming.org/Bitboards
@@ -7,7 +7,7 @@ package main
 //     beacuse of this reason I am using a [64]bool instead.
 //     this is simpler to use than bit hacks anyway
 type Bitboard struct {
-	board [64]bool
+	Board [64]bool
 }
 
 func CoordsToSquareIndex(x, y int) int {
@@ -18,7 +18,7 @@ func (board Bitboard) String() (output string) {
 	output = ""
 
 	for i := 0; i < 64; i++ {
-		if board.board[i] {
+		if board.Board[i] {
 			output += "1 "
 		} else {
 			output += "0 "
