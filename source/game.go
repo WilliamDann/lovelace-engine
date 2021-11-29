@@ -11,7 +11,7 @@ type Move struct {
 }
 
 func (move Move) String() (str string) {
-	str = strconv.FormatInt(int64(move.From), 10)
+	str = strconv.Itoa(move.From)
 
 	if move.Capture != None {
 		str += "x"
@@ -19,9 +19,9 @@ func (move Move) String() (str string) {
 		str += "->"
 	}
 
-	str = strconv.FormatInt(int64(move.To), 10)
+	str += strconv.FormatInt(int64(move.To), 10)
 
-	if move.Capture != None {
+	if move.Promote != None {
 		str += "=" + piece_symbols[move.Promote]
 	}
 

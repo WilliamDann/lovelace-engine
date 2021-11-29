@@ -23,6 +23,7 @@ func PawnCaptures(square int, white bool) (moves []Move) {
 }
 
 // TODO captures en passant
+// TODO clean this up
 func (game Game) GetPawnMoves() (moves []Move) {
 	movements := []Move{}
 	captures := []Move{}
