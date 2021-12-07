@@ -2,22 +2,17 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	"math"
 
 	"github.com/notnil/chess"
 )
 
 func main() {
-	game := chess.NewGame()
+	fen, _ := chess.FEN("7r/p5pp/R4p2/2N2n2/5k2/P4r1P/5P2/4R1K1 w - - 2 31")
+	game := chess.NewGame(fen)
 
-	for game.Outcome() == chess.NoOutcome {
-		// select a random move
-		moves := game.ValidMoves()
-		move := moves[rand.Intn(len(moves))]
-		game.Move(move)
-	}
-	// print outcome and game PGN
-	fmt.Println(game.Position().Board().Draw())
-	fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
-	fmt.Println(game.String())
+	score, move := minimaxRoot(*game, 2, math.Inf(-1), math.Inf(1), true)
+
+	fmt.Println(score)
+	fmt.Println(move.String())
 }
