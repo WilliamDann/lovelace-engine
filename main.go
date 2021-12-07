@@ -1,16 +1,23 @@
-package lovelace
+package main
 
 import (
 	"fmt"
-	. "lovelace/source"
+	"math/rand"
+
+	"github.com/notnil/chess"
 )
 
 func main() {
-	board := ParseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-	game := Game{board, true, []Move{}}
-	fmt.Println(game)
+	game := chess.NewGame()
 
-	game = game.PushMove(game.GetPawnMoves()[7])
-
-	fmt.Println(game)
+	for game.Outcome() == chess.NoOutcome {
+		// select a random move
+		moves := game.ValidMoves()
+		move := moves[rand.Intn(len(moves))]
+		game.Move(move)
+	}
+	// print outcome and game PGN
+	fmt.Println(game.Position().Board().Draw())
+	fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
+	fmt.Println(game.String())
 }
