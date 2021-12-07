@@ -53,10 +53,10 @@ func minimaxRoot(game chess.Game, depth, a, b float64, white bool) (float64, che
 }
 
 // TODO
-//   instead of a fixed depth, ordering moves by best last depth and ++ing will allow
-//   a search based on time instead of fixed depth. This has the added benefit of
-//   having a great guess of the best moves first which is a huge advantage for
-//   pruning
+//   instead of a fixed depth, ordering moves by best at last depth and ++ing depth
+//   will allow a search based on time instead of fixed depth. This has
+//   the added benefit of having a great guess of the best moves first
+//   which is a huge advantage for pruning
 //
 //   undo move instead of cloning maybe?
 //
