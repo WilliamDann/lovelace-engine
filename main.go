@@ -8,11 +8,13 @@ import (
 )
 
 func main() {
-	fen, _ := chess.FEN("7r/p5pp/R4p2/2N2n2/5k2/P4r1P/5P2/4R1K1 w - - 2 31")
+	fen, _ := chess.FEN("1r4r1/1p3Rpp/pN1pk3/8/3PP3/1n6/5RK1/8 w - - 1 2")
 	game := chess.NewGame(fen)
 
-	score, move := minimaxRoot(*game, 2, math.Inf(-1), math.Inf(1), true)
+	score, move := minimaxRoot(*game, 4, math.Inf(-1), math.Inf(1), true)
 
+	game.Move(&move)
+
+	fmt.Print(game.String() + " : ")
 	fmt.Println(score)
-	fmt.Println(move.String())
 }

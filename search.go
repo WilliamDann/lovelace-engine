@@ -59,6 +59,8 @@ func minimaxRoot(game chess.Game, depth, a, b float64, white bool) (float64, che
 //   pruning
 //
 //   undo move instead of cloning maybe?
+//
+//   sort so checks, lower->higher captures, and threats are evaled first
 func minimax(game chess.Game, depth, a, b float64, white bool) float64 {
 	if depth == 0 || game.Outcome() != chess.NoOutcome {
 		return eval(game)
