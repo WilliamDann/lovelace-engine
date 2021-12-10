@@ -1,54 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/notnil/chess"
 )
 
-func minimaxRoot(game chess.Game, depth, a, b float64, white bool) (float64, chess.Move) {
+func search(game chess.Game, depth int, a, b float64, white bool) (float64, []chess.Move) {
 	if white {
-		evalMax := math.Inf(-1)
-		var moveMax chess.Move
-
-		moves := game.ValidMoves()
-		for _, move := range moves {
-			clone := game.Clone()
-			clone.Move(move)
-
-			nodeEval := minimax(*clone, depth-1, a, b, false)
-			if nodeEval > evalMax {
-				moveMax = *move
-				evalMax = nodeEval
-			}
-			a = math.Max(a, nodeEval)
-
-			if b <= a {
-				break
-			}
-		}
-		return evalMax, moveMax
+		return maximize(game, depth, a, b)
 	} else {
-		evalMin := math.Inf(1)
-		var moveMin chess.Move
-
-		moves := game.ValidMoves()
-		for _, move := range moves {
-			clone := game.Clone()
-			clone.Move(move)
-
-			nodeEval := minimax(*clone, depth-1, a, b, true)
-			if nodeEval < evalMin {
-				moveMin = *move
-				evalMin = nodeEval
-			}
-			b = math.Min(b, nodeEval)
-
-			if b <= a {
-				break
-			}
-		}
-		return evalMin, moveMin
+		return minimize(game, depth, a, b)
 	}
 }
 
@@ -61,41 +24,71 @@ func minimaxRoot(game chess.Game, depth, a, b float64, white bool) (float64, che
 //   undo move instead of cloning maybe?
 //
 //   sort so checks, lower->higher captures, and threats are evaled first
-func minimax(game chess.Game, depth, a, b float64, white bool) float64 {
+func maximize(game chess.Game, depth int, a, b float64) (float64, []chess.Move) {
 	if depth == 0 || game.Outcome() != chess.NoOutcome {
-		return eval(game)
+		return eval(game), []chess.Move{}
 	}
 
-	if white {
-		evalMax := math.Inf(-1)
-		moves := game.ValidMoves()
-		for _, move := range moves {
-			clone := game.Clone()
-			clone.Move(move)
+	maxScore := math.Inf(-1)
+	maxScoreMoves := []chess.Move{}
+	allLegalMoves := game.ValidMoves()
 
-			nodeEval := minimax(*clone, depth-1, a, b, false)
-			evalMax = math.Max(evalMax, nodeEval)
-			a = math.Max(a, nodeEval)
+	for _, legalMove := range allLegalMoves {
 
-			if b <= a {
-				break
-			}
+		analysisBoard := game.Clone()
+		analysisBoard.Move(legalMove)
+
+		lineScore, lineMoves := minimize(*analysisBoard, depth-1, a, b)
+
+		r := legalMove.String()
+		ev := fmt.Sprintf("%f", lineScore)
+		fmt.Println(r + " :" + ev)
+
+		if lineScore > maxScore {
+			maxScoreMoves = append([]chess.Move{*legalMove}, lineMoves...)
+			maxScore = lineScore
 		}
-		return evalMax
-	} else {
-		evalMin := math.Inf(1)
-		moves := game.ValidMoves()
-		for _, move := range moves {
-			clone := game.Clone()
-			clone.Move(move)
 
-			nodeEval := minimax(*clone, depth-1, a, b, true)
-			evalMin = math.Min(evalMin, nodeEval)
-			b = math.Min(b, nodeEval)
-			if b <= a {
-				break
-			}
+		a = math.Max(a, lineScore)
+
+		if b <= a {
+			break
 		}
-		return evalMin
 	}
+
+	return maxScore, maxScoreMoves
+}
+
+func minimize(game chess.Game, depth int, a, b float64) (float64, []chess.Move) {
+	if depth == 0 || game.Outcome() != chess.NoOutcome {
+		return eval(game), []chess.Move{}
+	}
+
+	minScore := math.Inf(1)
+	minScoreMoves := []chess.Move{}
+	allLegalMoves := game.ValidMoves()
+
+	for _, legalMove := range allLegalMoves {
+		analysisBoard := game.Clone()
+		analysisBoard.Move(legalMove)
+
+		lineScore, lineMoves := maximize(*analysisBoard, depth-1, a, b)
+
+		r := legalMove.String()
+		ev := fmt.Sprintf("%f", lineScore)
+		fmt.Println("  " + r + " :" + ev)
+
+		if lineScore < minScore {
+			minScoreMoves = append([]chess.Move{*legalMove}, lineMoves...)
+			minScore = lineScore
+		}
+
+		b = math.Min(b, lineScore)
+
+		if b <= a {
+			break
+		}
+	}
+
+	return minScore, minScoreMoves
 }
